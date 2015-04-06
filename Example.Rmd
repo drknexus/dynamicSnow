@@ -1,0 +1,62 @@
+---
+title: "dynamicSnow Example"
+author: "Russell S. Pierce"
+date: "04/06/2015"
+output: html_document
+---
+
+Note, the example may assume you are running Linux for the purposes
+of simulating a node failure, but dynamicSnow does not require that
+you are running Linux, as far as I know, but it has been tested most
+in a Linux environment.
+
+```{r}
+library(parallel)
+if (!require(devtools)) {install.packages("devtools");library(devtools)}
+if (!require(dynamicSnow)) {install_github("drknexus/dynamicSnow");library(dynamicSnow)}
+```
+
+Let's say we make a cluster.
+```{r}
+cl <- makePSOCKcluster(rep("localhost",2))
+clusterEvalQ(cl,"Hi")
+```
+
+But then we decide we need one more node...
+```{r}
+cl[[3]] <- parallel:::newPSOCKnode("localhost", rank = 3)
+clusterEvalQ(cl,"Hi")
+```
+
+But, something bad happens, and one of our nodes dies...
+```{r}
+nodePIDs <- parSapply(cl,1:3,function(x) {Sys.getpid()})
+# now we kill one of the nodes
+library(tools)
+pskill(nodePIDs[2])
+```
+
+Then bad things happen, we can't get any of our results back!
+```{r}
+# clusterEvalQ(cl,"Hi")
+```
+
+How do we know there is a problem?
+```{r}
+all(checkPulse(cl))
+```
+
+How do we fix that problem?
+```{r}
+cl <- healCluster(cl)
+```
+
+Are we really recovered?
+```{r}
+clusterEvalQ(cl,"Hi")
+```
+
+Clean up the example
+```{r}
+stopCluster(cl)
+```

@@ -1,0 +1,14 @@
+Package: dynamicSnow
+Type: Package
+Title: Package for dynamic snow clusters
+Version: 0.1
+Date: 2015-04-06
+Authors@R: c(person(given="Russell S.", "Pierce", role = c("aut", "cre"),
+    email = "Russell.S.Pierce@gmail.com")
+    )
+Maintainer: Russell S. Pierce <Russell.S.Pierce@gmail.com>
+Description: A set of functions that allows for a dynamic snow cluster. With
+    a focus on allowing for fault tolerance and resizing on AWS in conjunction 
+    with starCluster.
+License: GPL-3
+LazyLoad: yes
